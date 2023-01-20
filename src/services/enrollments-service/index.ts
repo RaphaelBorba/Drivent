@@ -1,5 +1,5 @@
 import { request } from "@/utils/request";
-import { notFoundError, requestError } from "@/errors";
+import { notFoundError, invalidDataError } from "@/errors";
 import addressRepository, { CreateAddressParams } from "@/repositories/address-repository";
 import enrollmentRepository, { CreateEnrollmentParams } from "@/repositories/enrollment-repository";
 import { exclude } from "@/utils/prisma-utils";
@@ -42,7 +42,10 @@ async function createOrUpdateEnrollmentWithAddress(params: CreateOrUpdateEnrollm
   const enrollment = exclude(params, "address");
   const address = getAddressForUpsert(params.address);
 
-  //TODO - Verificar se o CEP é válido
+  const validateCEP = await request.get(`https://viacep.com.br/ws/${address.cep}/json/`)
+
+  if(validateCEP.data.erro) throw invalidDataError(['CEP incorrect'])
+  
   const newEnrollment = await enrollmentRepository.upsert(params.userId, enrollment, exclude(enrollment, "userId"));
 
   await addressRepository.upsert(newEnrollment.id, address, address);
