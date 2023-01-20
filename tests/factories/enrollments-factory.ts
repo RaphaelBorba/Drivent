@@ -37,7 +37,6 @@ export function createhAddressWithCEP() {
     logradouro: "Avenida Brigadeiro Faria Lima",
     complemento: "de 3252 ao fim - lado par",
     bairro: "Itaim Bibi",
-    cidade: "São Paulo",
     uf: "SP",
   };
 }
